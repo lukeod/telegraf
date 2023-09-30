@@ -186,6 +186,7 @@ func (h *handler) handleSubscribeResponseUpdate(acc telegraf.Accumulator, respon
 				continue
 			}
 			h.log.Debugf("Tag-subscription update for %q: %+v", tagSub.Name, update)
+			h.log.Debugf("Values - tagSub: %+v|| fullPath: %s|| fields: %+v|| tags: %+v", tagSub, fullPath, fields, tags)
 			if err := h.tagStore.insert(tagSub, fullPath, fields, tags); err != nil {
 				h.log.Errorf("Inserting tag failed: %v", err)
 			}
@@ -209,9 +210,10 @@ func (h *handler) handleSubscribeResponseUpdate(acc telegraf.Accumulator, respon
 		}
 
 		aliasPath, fields := h.handleTelemetryField(update, tags, prefix)
-
+		h.log.Debugf("Measurement fullPath: %s||  tags: %+v", fullPath, tags)
 		// Add the tags derived via tag-subscriptions
 		for k, v := range h.tagStore.lookup(fullPath, tags) {
+			h.log.Debugf(" ^-- adding k: %s||  v: %+v", k, v)
 			tags[k] = v
 		}
 
